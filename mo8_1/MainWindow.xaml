@@ -1,0 +1,178 @@
+﻿<Window x:Class="mo8_1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:mo8_1"
+        mc:Ignorable="d"
+        KeyDown="Window_KeyDown"
+        Title="MainWindow" Height="500" Width="950">
+    <Window.Resources>
+        <Style x:Key="marginAuto">
+            <Setter Property="Control.Margin" Value="0 0 0 5" />
+        </Style>
+    </Window.Resources>
+    <Grid Margin="0 10 0 0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>     
+        <Grid Margin="10 0 2 0" Grid.Column="0" Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <GroupBox Header="Рюкзак" Grid.Row="0" Grid.Column="0" Margin="0 0 2 0">
+                    <StackPanel>
+                        <TextBlock Text="Кол-во предметов" Grid.Row="0"/>
+                        <TextBox x:Name="valueNum" Style="{StaticResource marginAuto}"/>
+                        <TextBlock Text="Максимальный вес"  Grid.Row="2"/>
+                        <TextBox x:Name="valueMax" Style="{StaticResource marginAuto}"/>
+                        <Button  x:Name="generateItems" Content="Сгенировать" Click="generateItems_Click"/>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Header="Популяция" Grid.Row="0" Grid.Column="1" Margin="2 0 0 0">
+                    <StackPanel>
+                        <TextBlock Text="Кол-во особей в поопуляции"/>
+                        <TextBox x:Name="valuePopulation" Style="{StaticResource marginAuto}"/>
+                        <TextBlock Visibility="Collapsed" Text="Количество лучших"  Grid.Row="2"/>
+                        <TextBox Visibility="Collapsed" Text="1" x:Name="valueBest" Style="{StaticResource marginAuto}"/>
+                        <TextBlock Text="Вероятность мутации(%)"  Grid.Row="2"/>
+                        <TextBox x:Name="valueMutation" Style="{StaticResource marginAuto}"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Button Margin="0 0 2 0" x:Name="generatePopulationBtn" Content="Создать" Click="generatePopulationBtn_Click" Grid.Column="0"/>
+                            <Button Margin="2 0 0 0" x:Name="calculate" Content="Расчитать" Click="calculate_Click" Grid.Column="1"/>
+                        </Grid>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Header="Условия остановки" Grid.Row="1" Grid.ColumnSpan="2" Margin="0 0 2 0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="0 0 2 0">
+                            <TextBlock Text="Процент качества" Grid.Column="0"/>
+                            <TextBox Text="70" x:Name="valueStopPercent" Style="{StaticResource marginAuto}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Margin="2 0 0 0">
+                            <TextBlock Text="Кол-во проходов"  Grid.Column="1"/>
+                            <TextBox Text="10" x:Name="valueStopCycle" Style="{StaticResource marginAuto}"/>
+                        </StackPanel>
+                    </Grid>
+                </GroupBox>
+            </Grid>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <GroupBox Header="Рюкзак" Grid.Column="0" Margin="0 0 2 0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <DataGrid HeadersVisibility="Column" CanUserAddRows="False" Name="dataGRBackpack" AutoGenerateColumns="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding name}" Width="auto" Header="Наименование"/>
+                                <DataGridTextColumn Binding="{Binding weight}" Width="1*" Header="Вес"/>
+                                <DataGridTextColumn Binding="{Binding price}" Width="auto" Header="Ценность"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Вес рюкзака: "/>
+                            <TextBlock Grid.Column="1" Text="0" x:Name="weightInfo" />
+                            <TextBlock Grid.Column="2" Text=" | Стоимость рюкзака: "/>
+                            <TextBlock Grid.Column="3" Text="0" x:Name="priceInfo" />
+                        </Grid>
+                    </Grid>
+                </GroupBox>
+                <GroupBox Header="Наилучшие в поколении" Grid.Column="1" Margin="2 0 0 0">
+                    <DataGrid HeadersVisibility="Column" CanUserAddRows="False" Name="dataGTheBestInPopulation" AutoGenerateColumns="False" ItemsSource="{Binding rowsPopulation}" SelectionChanged="dataGTheBestInPopulation_SelectionChanged">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding name}"  Width="auto" Header="Наименование"/>
+                            <DataGridTextColumn Binding="{Binding chromosome}" Width="auto" Header="Хромосома"/>
+                            <DataGridTextColumn Binding="{Binding weight}" Width="1*" Header="Вес"/>
+                            <DataGridTextColumn Binding="{Binding price}" Width="1*" Header="Цена"/>
+                            <DataGridTextColumn Binding="{Binding percent}" Width="auto" Header="Процент"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+            </Grid>
+        </Grid>
+        <Grid Margin="2 0 10 0" Grid.Column="1" Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" MinHeight="100"/>
+                <RowDefinition Height="16"/>
+                <RowDefinition Height="1*" MinHeight="100"/>
+            </Grid.RowDefinitions>
+            <GroupBox Header="Популяция" Padding="0" Grid.Row="0">
+                <DataGrid HeadersVisibility="Column" CanUserAddRows="False" Name="dataGPopulation" AutoGenerateColumns="False" ItemsSource="{Binding rowsPopulation}" SelectionChanged="dataGPopulation_SelectionChanged">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Binding="{Binding name}"  Width="auto" Header="Наименование"/>
+                        <DataGridTextColumn Binding="{Binding chromosome}" Width="auto" Header="Хромосома"/>
+                        <DataGridTextColumn Binding="{Binding weight}" Width="1*" Header="Вес"/>
+                        <DataGridTextColumn Binding="{Binding price}" Width="1*" Header="Цена"/>
+                        <DataGridTextColumn Binding="{Binding percent}" Width="auto" Header="Процент"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </GroupBox>
+            <GridSplitter Grid.Row="1" Height="10" HorizontalAlignment="Stretch" ShowsPreview="True"/>
+            <GroupBox Header="Список вещей" Grid.Row="2">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <DataGrid HeadersVisibility="Column" CanUserAddRows="False" Name="dataGSelected" AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding name}" Width="auto" Header="Наименование"/>
+                            <DataGridTextColumn Binding="{Binding weight}" Width="1*" Header="Вес"/>
+                            <DataGridTextColumn Binding="{Binding price}" Width="1*" Header="Ценность"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Вес рюкзака: "/>
+                        <TextBlock Grid.Column="1" Text="0" x:Name="weightSelectedInfo" />
+                        <TextBlock Grid.Column="2" Text=" | Стоимость рюкзака: "/>
+                        <TextBlock Grid.Column="3" Text="0" x:Name="priceSelectedInfo" />
+                    </Grid>
+                </Grid>
+            </GroupBox>
+        </Grid>
+        <StackPanel x:Name="status" Background="#007acc" Grid.Row="1" Grid.ColumnSpan="2">
+            <TextBlock Name="textStatus" Margin="10 0" Text="Ready" Foreground="White"/>
+        </StackPanel>
+    </Grid>
+</Window>
